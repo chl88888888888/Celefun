@@ -103,18 +103,38 @@ static inline void cf_print_utf8(FILE* f, const cf_arr_i64* a) {
     fputc('\n', f);
 }
 
+// 按 token 读：跳过空白，读一个空白分隔的记号再解析（int 用 strtoll）
 static inline bool cf_read_i64(int64_t* out) {
-    char buf[256];
-    if (!fgets(buf, (int)sizeof buf, stdin)) return false;
+    int c = fgetc(stdin);
+    while (c == ' ' || c == '\t' || c == '\n' || c == '\r') c = fgetc(stdin);
+    if (c == EOF) return false;
+    char buf[128];
+    int n = 0;
+    while (c != EOF && c != ' ' && c != '\t' && c != '\n' && c != '\r') {
+        if (n < 127) buf[n++] = (char)c;
+        c = fgetc(stdin);
+    }
+    if (c != EOF) ungetc(c, stdin);
+    buf[n] = 0;
     char* end = NULL;
     long long v = strtoll(buf, &end, 10);
     if (end == buf) return false;
     *out = (int64_t)v;
     return true;
 }
+// 按 token 读浮点（strtod）
 static inline bool cf_read_f64(double* out) {
-    char buf[256];
-    if (!fgets(buf, (int)sizeof buf, stdin)) return false;
+    int c = fgetc(stdin);
+    while (c == ' ' || c == '\t' || c == '\n' || c == '\r') c = fgetc(stdin);
+    if (c == EOF) return false;
+    char buf[128];
+    int n = 0;
+    while (c != EOF && c != ' ' && c != '\t' && c != '\n' && c != '\r') {
+        if (n < 127) buf[n++] = (char)c;
+        c = fgetc(stdin);
+    }
+    if (c != EOF) ungetc(c, stdin);
+    buf[n] = 0;
     char* end = NULL;
     double v = strtod(buf, &end);
     if (end == buf) return false;
@@ -454,6 +474,7 @@ mod tests {
         assert!(c.contains("((double)(INT64_C(1)))"));
     }
 }
+
 
 
 
