@@ -1,0 +1,7 @@
+/target/
+*.c
+*.h
+*.exe
+*.obj
+*.ll
+*.pdb

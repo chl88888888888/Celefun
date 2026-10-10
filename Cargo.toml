@@ -1,0 +1,12 @@
+[package]
+name = "celefun"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "celefun"
+path = "src/lib.rs"
+
+[[bin]]
+name = "celefun"
+path = "src/main.rs"
