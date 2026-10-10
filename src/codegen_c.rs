@@ -15,15 +15,15 @@ typedef struct { double*  data; size_t len; size_t cap; } cf_arr_f64;
 static inline void cf_arr_i64_set(cf_arr_i64* a, int64_t i, int64_t v) {
     if (i < 0) { fprintf(stderr, "index must not be negative: %lld\n", (long long)i); exit(1); }
     size_t idx = (size_t)i;
-    if (idx >= a->len) {
+    if (idx >= a->cap) {
         size_t cap = a->cap ? a->cap : 8;
         while (cap <= idx) cap *= 2;
         a->data = (int64_t*)realloc(a->data, cap * sizeof(int64_t));
         if (!a->data) { fprintf(stderr, "out of memory\n"); exit(1); }
-        for (size_t k = a->len; k < cap; k++) a->data[k] = 0;
+        for (size_t k = a->cap; k < cap; k++) a->data[k] = 0;
         a->cap = cap;
-        a->len = idx + 1;
     }
+    if (idx >= a->len) a->len = idx + 1;
     a->data[idx] = v;
 }
 static inline int64_t cf_arr_i64_get(const cf_arr_i64* a, int64_t i) {
@@ -36,15 +36,15 @@ static inline int64_t cf_arr_i64_get(const cf_arr_i64* a, int64_t i) {
 static inline void cf_arr_f64_set(cf_arr_f64* a, int64_t i, double v) {
     if (i < 0) { fprintf(stderr, "index must not be negative: %lld\n", (long long)i); exit(1); }
     size_t idx = (size_t)i;
-    if (idx >= a->len) {
+    if (idx >= a->cap) {
         size_t cap = a->cap ? a->cap : 8;
         while (cap <= idx) cap *= 2;
         a->data = (double*)realloc(a->data, cap * sizeof(double));
         if (!a->data) { fprintf(stderr, "out of memory\n"); exit(1); }
-        for (size_t k = a->len; k < cap; k++) a->data[k] = 0;
+        for (size_t k = a->cap; k < cap; k++) a->data[k] = 0;
         a->cap = cap;
-        a->len = idx + 1;
     }
+    if (idx >= a->len) a->len = idx + 1;
     a->data[idx] = v;
 }
 static inline double cf_arr_f64_get(const cf_arr_f64* a, int64_t i) {
@@ -474,6 +474,7 @@ mod tests {
         assert!(c.contains("((double)(INT64_C(1)))"));
     }
 }
+
 
 
 
